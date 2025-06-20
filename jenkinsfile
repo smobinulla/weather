@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    environment {
+        WEATHER_API_KEY = credentials('WEATHER_API_KEY')  // Jenkins credential ID
+    }
+
+    tools {
+        maven 'Maven 3.8.6'    // Set in Jenkins Global Tool Configuration
+        jdk 'Java 17'          // Set in Jenkins Global Tool Configuration
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/smobinulla/weather.git'  // Replace with your repo
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean compile'
+            }
+        }
+
+        stage('Run Weather App') {
+            steps {
+                sh 'mvn exec:java'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Weather app ran successfully!'
+        }
+        failure {
+            echo '❌ Pipeline failed.'
+        }
+    }
+}
+
